@@ -31,12 +31,12 @@ class LinearRegression:
         return self.y_hat
 
     def evaluate(self, X, y):
-        """
-        Assessing the model.
+        """ 
+        Assessing the model. 
         
-        Args:
-            X: Design matrix
-            y: Response variable
+        Args: 
+            X: Design matrix 
+            y: Response variable 
         """
         X = np.column_stack((np.ones(len(X)), X))
         d = len(self.b)-1                               # number of parameters/dimensions/features
@@ -48,14 +48,17 @@ class LinearRegression:
         SSR = SST - SSE
         R_squared = SSR / SST                           # indicates how much of the data is explained by your model (0 to 1)
         r = stats.pearsonr(y, self.y_hat)[0]
-        MSE = (1 / n) * SSE                             # values closer to zero indicate that the model’s predictions are closer to the actual values
-        RMSE = np.sqrt(MSE)
         f_stat = (SSR / d) / var
         f_pvalue = stats.f.sf(f_stat, d, n-d-1)         # tests significance of all parameters at once
         cov_matrix = np.linalg.pinv(X.T @ X) * var
         ti_stat = [self.b[i] / (std_dev * np.sqrt(cov_matrix[i, i])) for i in range(d)] # holds t-statistics for each coefficient
-        ti_pvalues = [2 * min(stats.t.cdf(t, n-d-1), stats.t.sf(t, n-d-1)) for t in ti_stat] # holds p-values for each coefficient
+        ti_pvalues = [2 * min(stats.t.cdf(i, n-d-1), stats.t.sf(i, n-d-1)) for i in ti_stat] # holds p-values for each coefficient
+        r0 = stats.pearsonr(X[:,2], X[:,3])             # do this over and over again for each pair of features
+        RSE = np.sqrt((1 / (n - 2)) * SSE)
+        MSE = (1 / n) * SSE                             # values closer to zero indicate that the model’s predictions are closer to the actual values
+        RMSE = np.sqrt(MSE)
         return {
+            "Coefficients": self.b,
             "Variance": var,
             "Standard deviation": std_dev,
             "SSE": SSE,
@@ -65,9 +68,11 @@ class LinearRegression:
             "r": r,
             "MSE": MSE,
             "RMSE": RMSE,
+            "RSE": RSE,
             "F_stat": f_stat,
             "F_pvalue": f_pvalue,
-            "cov_matrix": cov_matrix,
-            "ti_stat": ti_stat,
-            "ti_pvalues": ti_pvalues
+            # "cov_matrix": cov_matrix,
+            # "ti_stat": ti_stat,
+            "ti_pvalues": ti_pvalues,
+            "r0": r0
         }
