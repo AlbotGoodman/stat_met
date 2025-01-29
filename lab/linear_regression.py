@@ -39,16 +39,16 @@ class LinearRegression:
             y: Response variable
         """
         X = np.column_stack((np.ones(len(X)), X))
-        d = len(self.b)-1                           # number of parameters/dimensions/features
+        d = len(self.b)-1                               # number of parameters/dimensions/features
         n = y.shape[0]
         SSE = np.sum(np.square(y - self.y_hat))
         var = SSE / (n - d - 1)
         std_dev = np.sqrt(var)
         SST = np.sum(np.square(y - np.mean(y)))
         SSR = SST - SSE
-        R_squared = SSR / SST
+        R_squared = SSR / SST                           # indicates how much of the data is explained by your model (0 to 1)
         r = stats.pearsonr(y, self.y_hat)[0]
-        MSE = (1 / n) * SSE
+        MSE = (1 / n) * SSE                             # values closer to zero indicate that the model’s predictions are closer to the actual values
         RMSE = np.sqrt(MSE)
         f_stat = (SSR / d) / var
         f_pvalue = stats.f.sf(f_stat, d, n-d-1)         # tests significance of all parameters at once
