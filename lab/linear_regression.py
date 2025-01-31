@@ -63,7 +63,7 @@ class LinearRegression:
     
     def test_relevance(self, X, y):
         SSE = np.sum(np.square(y - X @ self.b))
-        RSE = np.sqrt((1 / (self._n - 2)) * SSE)
+        RSE = np.sqrt(SSE / (self._n - 2))
         MSE = (1 / self._n) * SSE
         RMSE = np.sqrt(MSE)
         return {
@@ -81,3 +81,16 @@ class LinearRegression:
             "kin_ine": kin_ine,
             "geo_ine": geo_ine
         }
+    
+    def confidence_interval(self, X, y):
+        var = self.variance(X, y)
+        SSX = np.sum(np.square(X - np.mean(X))) / (self._n - 1)
+        std_err = var / self._n
+        std_err_b = var / SSX
+        ci = (self.b, 2 * np.sqrt(std_err_b))
+    
+    def observer_bias(self, X, y):
+        """
+        Test significance on the observer values. 
+        """
+        pass
