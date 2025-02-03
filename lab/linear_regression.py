@@ -8,6 +8,7 @@ class LinearRegression:
         self._d = None
         self._n = None
         self._con_lvl = 0.95
+        self.a = 1-self._con_lvl    # alpha
         self.b = None
 
     @property
@@ -82,12 +83,19 @@ class LinearRegression:
             "geo_ine": geo_ine
         }
     
-    def confidence_interval(self, X, y):
+    def confidence_intervals(self, X, y):
         var = self.variance(X, y)
-        SSX = np.sum(np.square(X - np.mean(X))) / (self._n - 1)
-        std_err = var / self._n
-        std_err_b = var / SSX
-        ci = (self.b, 2 * np.sqrt(std_err_b))
+        std_dev = self.standard_deviation(X, y)
+        cov_matrix = np.linalg.pinv(X.T @ X) * var
+        t_crit = stats.t.ppf(1 - self.a / 2, self._n - self._d - 1)
+        intervals = []
+        for i in range(self._d + 1):
+            std_err = std_dev * np.sqrt(cov_matrix[i,i])
+            margin = t_crit * std_err
+            lower = self.b[i] - margin
+            upper = self.b[i] + margin
+            intervals.append((lower, upper))
+        return intervals
     
     def observer_bias(self, X, y):
         """
