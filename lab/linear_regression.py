@@ -96,9 +96,3 @@ class LinearRegression:
             upper = self.b[i] + margin
             intervals.append((lower, upper))
         return intervals
-
-    def observer_bias(self, X, y):
-        """
-        Test significance on the observer values. 
-        """
-        pass
