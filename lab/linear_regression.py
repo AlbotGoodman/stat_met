@@ -7,7 +7,7 @@ class LinearRegression:
     def __init__(self):
         self._d = None
         self._n = None
-        self._con_lvl = 0.997
+        self._con_lvl = 0.997       # pga R²
         self.a = 1-self._con_lvl    # alpha
         self.b = None
 
@@ -72,21 +72,14 @@ class LinearRegression:
             "RMSE": RMSE
         }
 
-    def pearson(self, X, y):
-        kin_geo = stats.pearsonr(X[:,1], X[:,2])
-        kin_ine = stats.pearsonr(X[:,1], X[:,3])
-        geo_ine = stats.pearsonr(X[:,2], X[:,3])
-        return {
-            "kin_geo": kin_geo,
-            "kin_ine": kin_ine,
-            "geo_ine": geo_ine
-        }
+    def pearson(self, X):
+        return np.corrcoef(X, rowvar=False) # RuntimeWarning: invalid value encountered in divide c /= stddev[:, None]
     
     def confidence_intervals(self, X, y):
         var = self.variance(X, y)
         std_dev = self.standard_deviation(X, y)
         cov_matrix = np.linalg.pinv(X.T @ X) * var
-        t_crit = stats.t.ppf(1 - self.a / 2, self._n - self._d - 1)
+        t_crit = stats.t.ppf(self.a / 2, self._n - self._d - 1)
         ci = []
         for i in range(self._d + 1):
             std_err = std_dev * np.sqrt(cov_matrix[i,i])
