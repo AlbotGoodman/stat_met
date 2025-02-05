@@ -7,7 +7,7 @@ class LinearRegression:
     def __init__(self):
         self._d = None
         self._n = None
-        self._con_lvl = 0.95
+        self._con_lvl = 0.997
         self.a = 1-self._con_lvl    # alpha
         self.b = None
 
@@ -55,12 +55,11 @@ class LinearRegression:
             "ti_pvalues": ti_pvalues
         }
 
-    def relevance(self, X, y):
+    def r_squared(self, X, y):
         SSE = np.sum(np.square(y - X @ self.b))
         SST = np.sum(np.square(y - np.mean(y)))
         SSR = SST - SSE
-        R_squared = SSR / SST
-        return R_squared
+        return SSR / SST
     
     def test_relevance(self, X, y):
         SSE = np.sum(np.square(y - X @ self.b))
@@ -88,11 +87,11 @@ class LinearRegression:
         std_dev = self.standard_deviation(X, y)
         cov_matrix = np.linalg.pinv(X.T @ X) * var
         t_crit = stats.t.ppf(1 - self.a / 2, self._n - self._d - 1)
-        intervals = []
+        ci = []
         for i in range(self._d + 1):
             std_err = std_dev * np.sqrt(cov_matrix[i,i])
             margin = t_crit * std_err
             lower = self.b[i] - margin
             upper = self.b[i] + margin
-            intervals.append((lower, upper))
-        return intervals
+            ci.append((lower, upper))
+        return ci
