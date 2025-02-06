@@ -7,8 +7,8 @@ class LinearRegression:
     def __init__(self):
         self._d = None
         self._n = None
-        self._con_lvl = 0.997       # pga R²
-        self.a = 1-self._con_lvl    # alpha
+        self.con_lvl = 0.997       # pga R²
+        self.a = 1-self.con_lvl    # alpha
         self.b = None
 
     @property
@@ -21,7 +21,7 @@ class LinearRegression:
 
     @property
     def confidence_level(self):
-        return self._con_lvl
+        return self.con_lvl
 
     def fit(self, X, y):
         self.b = np.linalg.pinv(X.T @ X) @ X.T @ y
@@ -73,7 +73,8 @@ class LinearRegression:
         }
 
     def pearson(self, X):
-        return np.corrcoef(X, rowvar=False) # RuntimeWarning: invalid value encountered in divide c /= stddev[:, None]
+        r_X = X[:, 1:] # Remove the intercept column to avoid division by zero
+        return np.corrcoef(r_X, rowvar=False)
     
     def confidence_intervals(self, X, y):
         var = self.variance(X, y)
@@ -84,7 +85,5 @@ class LinearRegression:
         for i in range(self._d + 1):
             std_err = std_dev * np.sqrt(cov_matrix[i,i])
             margin = t_crit * std_err
-            # lower = self.b[i] - margin
-            # upper = self.b[i] + margin
-            ci.append((margin))
+            ci.append(margin)
         return ci
