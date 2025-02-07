@@ -9,10 +9,14 @@ class LinearRegression:
         self._n = None
         self._con_lvl = 0.95
         self._b = None
+        self._X_train_means = None
+        self._X_train_std_devs = None
+        self._y_train_mean = None
+        self._y_train_std_dev = None
 
     @property
     def d(self):
-        """Returns the number of parameters/features - always the same."""
+        """Returns the number of parameters/features."""
         return self._d
     
     @property
@@ -34,6 +38,31 @@ class LinearRegression:
     def alpha(self):
         """Returns the alpha value which is based on 1 - confidence level."""
         return 1 - self._con_lvl
+    
+    def standardise(arr, is_X=True):
+        """
+        Returning a standardised numpy array. 
+
+        Args: 
+            arr:    the data set, as a numpy array
+            is_X:   if set to True, the feature matrix should be standardised (only the continuous values)
+                    if set to False, the independent variable should be standardised
+        """
+        data_std = arr.copy()
+        
+        if is_X:
+            d = data_std.shape[1]
+            for i in range(1, d-1):
+                mean = np.mean(data_std[:, i])
+                std_dev = np.std(data_std[:, i], ddof=1) # since this is not the population
+                data_std[:, i] = (data_std[:, i] - mean) / std_dev
+
+        else:
+            mean = np.mean(data_std)
+            std_dev = np.std(data_std, ddof=1)
+            data_std = (data_std - mean) / std_dev
+
+        return data_std
     
     def fit(self, X, y):
         """Trains the regression model."""
