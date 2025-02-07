@@ -17,8 +17,13 @@ class LinearRegression:
     
     @property
     def n(self):
-        """Returns the number of rows in the dataset - varies with each set."""  #TODO
+        """Returns the number of rows in the training set."""
         return self._n
+    
+    @property
+    def n_sample(self):
+        """Returns the number of rows of the sample set (validation/test)."""
+        return self._n_sample
 
     @property
     def confidence_level(self):
@@ -37,11 +42,13 @@ class LinearRegression:
         self._n = y.shape[0]
 
     def predict(self, X):                                               # val
-        """Calculates and returns the predicted dependent variables."""
-        return X @ self._b
+        """Calculates and returns the predicted dependent variables (ŷ)."""
+        y_hat = X @ self._b
+        self._n_sample = y_hat.shape[0]
+        return y_hat
 
     def _errors(self, X, y):
-        """Helper method that returns the errors (y - y_hat)."""
+        """Helper method that returns the errors (y - ŷ)."""
         return y - self.predict(X)
 
     def _sse(self, X, y):
@@ -84,14 +91,14 @@ class LinearRegression:
             "ti_pvalues": ti_pvalues
         }
 
-    def r_squared(self, X, y):                                          # val
+    def r_squared(self, X, y):
         """Returns the R² value of the regression model."""
         return self._ssr(X, y) / self._sst(y)
     
     def relevance(self, X, y):                                          # val
         """Tests relevance of the regression model."""
-        RSE = np.sqrt(self._sse(X, y) / (self._n - 2))
-        MSE = (1 / self._n) * self._sse(X, y)
+        RSE = np.sqrt(self._sse(X, y) / (self._n_sample - 2))
+        MSE = (1 / self._n_sample) * self._sse(X, y)
         RMSE = np.sqrt(MSE)
         return {
             "RSE": RSE,
