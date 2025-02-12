@@ -70,7 +70,7 @@ class LinearRegression:
         self._d = len(self._b) - 1
         self._n = y.shape[0]
 
-    def predict(self, X):                                               # val
+    def predict(self, X):
         """Calculates and returns the predicted dependent variables (ŷ)."""
         y_hat = X @ self._b
         self._n_sample = y_hat.shape[0]
@@ -124,9 +124,15 @@ class LinearRegression:
         """Returns the R² value of the regression model."""
         return self._ssr(X, y) / self._sst(y)
     
-    def relevance(self, X, y):                                          # val
-        """Tests relevance of the regression model."""
-        RSE = np.sqrt(self._sse(X, y) / (self._n_sample - 2))
+    def estimates(self, X, y):
+        """
+        Estimates the variation of the regression model.
+        
+        RSE: estimates the standard error
+        MSE: estimates the variance
+        RMSE: estimates the standard deviation
+        """
+        RSE = np.sqrt(self._sse(X, y) / (self._n_sample - self._d - 1))
         MSE = (1 / self._n_sample) * self._sse(X, y)
         RMSE = np.sqrt(MSE)
         return {
